@@ -15,6 +15,13 @@ const LOCATION_NAME = "Dolomites, Italy";
 const OVERSCAN = 1.3;
 const SMOOTHING = 0.22;
 const DRAG_THRESHOLD = 6;
+const BLACKBIRD_POSITION = { x: 67.07, y: 63.34 };
+
+// The photo is visually translated by half of its own size to be centred in
+// its drag container. Convert photo percentages to that container's origin.
+function photoCoordinate(percent: number, size: number): number {
+  return (percent / 100 - 0.5) * size;
+}
 
 interface DolomitesSceneProps {
   onWorldMapSelect: () => void;
@@ -258,16 +265,16 @@ function DolomitesSceneInner({ onWorldMapSelect }: DolomitesSceneProps) {
         />
 
         {/* Animated blackbird — pinned to the photograph so it pans
-            with the scene. Positioned at 66.44% / 63.31% of the image. */}
+            with the scene. Positioned at 67.07% / 63.34% of the image. */}
         {ready && imgSize.width > 0 && (
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute left-1/2 top-1/2"
-            style={{ transform: "translate(-50%, -50%)", zIndex: 40 }}
+            className="pointer-events-none absolute left-0 top-0"
+            style={{ zIndex: 40 }}
           >
             <TempBlackbirdBehavior
-              left={`${(66.44 / 100) * imgSize.width}px`}
-              top={`${(63.31 / 100) * imgSize.height}px`}
+              left={`${photoCoordinate(BLACKBIRD_POSITION.x, imgSize.width)}px`}
+              top={`${photoCoordinate(BLACKBIRD_POSITION.y, imgSize.height)}px`}
             />
           </div>
         )}
@@ -277,16 +284,16 @@ function DolomitesSceneInner({ onWorldMapSelect }: DolomitesSceneProps) {
         {import.meta.env.DEV && ready && (
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute left-1/2 top-1/2"
-            style={{ transform: "translate(-50%, -50%)", zIndex: 60 }}
+            className="pointer-events-none absolute left-0 top-0"
+            style={{ zIndex: 60 }}
           >
             {debugMarks.map((m) => (
               <div
                 key={m.id}
                 className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2"
                 style={{
-                  left: `${(m.x / 100) * (imgRef.current?.width ?? 0)}px`,
-                  top: `${(m.y / 100) * (imgRef.current?.height ?? 0)}px`,
+                  left: `${photoCoordinate(m.x, imgRef.current?.width ?? 0)}px`,
+                  top: `${photoCoordinate(m.y, imgRef.current?.height ?? 0)}px`,
                 }}
               >
                 <div className="absolute left-1/2 top-0 h-[40px] w-px -translate-x-1/2 -translate-y-1/2 bg-fuchsia-400/80" />
